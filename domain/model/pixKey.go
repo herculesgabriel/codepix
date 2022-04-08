@@ -13,20 +13,21 @@ func init() {
 }
 
 type IPixKeyRepository interface {
-	Register(pixKey *PixKey) error
+	Register(pixKey *PixKey) (*PixKey, error)
 	FindByKeyAndKind(key string, kind string) (*PixKey, error)
 	AddBank(bank *Bank) error
 	AddAccount(account *Account) error
 	FindAccount(id string) (*Account, error)
+	FindBank(id string) (*Bank, error)
 }
 
 type PixKey struct {
 	Base      `valid:"required"`
-	Kind      string   `json:"kind" valid:"notnull"`
-	Key       string   `json:"key" valid:"notnull"`
-	AccountID string   `json:"account_id" valid:"notnull"`
+	Kind      string   `json:"kind" gorm:"type:varchar(20)" valid:"notnull"`
+	Key       string   `json:"key" gorm:"type:varchar(255)" valid:"notnull"`
+	AccountID string   `gorm:"column:account_id;type:uuid;not null" valid:"-"`
 	Account   *Account `valid:"-"`
-	Status    string   `json:"status" valid:"notnull"`
+	Status    string   `json:"status" gorm:"type:varchar(20)" valid:"notnull"`
 }
 
 func (p *PixKey) isValid() error {
